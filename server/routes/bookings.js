@@ -34,8 +34,14 @@ ${notes ? `📝 Notes: ${notes}` : ''}
     const encodedMessage = encodeURIComponent(message);
     
     // Send to CallMeBot API
-    const callmebotPhone = process.env.CALLMEBOT_PHONE || '254724375331';
-    const callmebotKey = process.env.CALLMEBOT_API_KEY || '4329109';
+    const callmebotPhone = process.env.CALLMEBOT_PHONE;
+    const callmebotKey = process.env.CALLMEBOT_API_KEY;
+    
+    if (!callmebotPhone || !callmebotKey) {
+      console.warn('⚠ CallMeBot credentials not configured');
+      return false;
+    }
+    
     const url = `https://api.callmebot.com/whatsapp.php?phone=${callmebotPhone}&text=${encodedMessage}&apikey=${callmebotKey}`;
     
     const response = await axios.get(url, { timeout: 10000 });
