@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — joynailart</title>
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource/playfair-display@5.1.1/index.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource/lato@5.1.1/index.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose:    #e8a4b0;
+      --rose-dk: #c97a8a;
+      --rose-lt: #fdf2f4;
+      --gold:    #c9a96e;
+      --dark:    #2d2d2d;
+      --mid:     #6b6b6b;
+      --light:   #f9f5f6;
+      --white:   #ffffff;
+      --border:  #eddde1;
+      --success: #4caf7d;
+      --warning: #f5a623;
+      --danger:  #e85d5d;
+      --pending: #6c8ebf;
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN SCREEN ───────────────────────────── */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fdf2f4 0%, #f9f0f3 50%, #faeef2 100%);
+    }
+
+    .login-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(200, 120, 140, 0.15);
+      text-align: center;
+    }
+
+    .login-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--rose-dk);
+      margin-bottom: 4px;
+    }
+
+    .login-sub {
+      font-size: 13px;
+      color: var(--mid);
+      margin-bottom: 32px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: 'Lato', sans-serif;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-card input:focus { border-color: var(--rose); }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--rose-dk);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+
+    .login-btn:hover { background: #b5687a; }
+    .login-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+
+    /* ── ADMIN SHELL ────────────────────────────── */
+    #adminShell { display: none; min-height: 100vh; }
+
+    .admin-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(200,120,140,0.08);
+    }
+
+    .admin-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--rose-dk);
+    }
+
+    .admin-logo span {
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      color: var(--mid);
+      margin-left: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      vertical-align: middle;
+    }
+
+    .logout-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--mid);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover { border-color: var(--rose); color: var(--rose-dk); }
+
+    .admin-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+    }
+
+    .nav-tab {
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mid);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .nav-tab.active { color: var(--rose-dk); border-bottom-color: var(--rose-dk); }
+    .nav-tab:hover:not(.active) { color: var(--dark); }
+
+    .admin-content {
+      padding: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── STATS BAR ──────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label { font-size: 12px; color: var(--mid); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-number { font-size: 32px; font-weight: 700; color: var(--dark); line-height: 1.1; margin-top: 4px; }
+    .stat-card.rose .stat-number { color: var(--rose-dk); }
+    .stat-card.green .stat-number { color: var(--success); }
+    .stat-card.gold .stat-number { color: var(--gold); }
+
+    /* ── SECTION HEADER ─────────────────────────── */
+    .section-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-top h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--dark);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-row select, .filter-row input {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      outline: none;
+      background: var(--white);
+    }
+
+    .filter-row select:focus, .filter-row input:focus { border-color: var(--rose); }
+
+    /* ── BOOKINGS TABLE ─────────────────────────── */
+    .table-wrap {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead th {
+      background: var(--rose-lt);
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--mid);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: var(--rose-lt); }
+
+    td {
+      padding: 14px 16px;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-pending   { background: #e8eef8; color: var(--pending); }
+    .badge-confirmed { background: #e8f5ee; color: var(--success); }
+    .badge-cancelled { background: #fde8e8; color: var(--danger); }
+    .badge-completed { background: #f5f0e8; color: var(--gold); }
+
+    .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .btn-sm {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      font-family: 'Lato', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .btn-confirm { background: #e8f5ee; color: var(--success); border-color: #b8dfc8; }
+    .btn-confirm:hover { background: var(--success); color: white; }
+    .btn-cancel  { background: #fde8e8; color: var(--danger); border-color: #f5bcbc; }
+    .btn-cancel:hover  { background: var(--danger); color: white; }
+    .btn-complete { background: #f5f0e8; color: var(--gold); border-color: #e0cfa6; }
+    .btn-complete:hover { background: var(--gold); color: white; }
+    .btn-delete  { background: #fff; color: var(--mid); border-color: var(--border); }
+    .btn-delete:hover  { background: var(--danger); color: white; border-color: var(--danger); }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--mid);
+    }
+
+    .empty-state p { font-size: 15px; }
+
+    /* ── GALLERY SECTION ────────────────────────── */
+    .upload-area {
+      background: var(--white);
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .upload-area:hover, .upload-area.dragover {
+      border-color: var(--rose);
+      background: var(--rose-lt);
+    }
+
+    .upload-area input[type="file"] { display: none; }
+
+    .upload-icon { font-size: 36px; margin-bottom: 12px; }
+    .upload-area h3 { font-size: 18px; color: var(--dark); margin-bottom: 6px; }
+    .upload-area p { font-size: 13px; color: var(--mid); }
+
+    .upload-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: var(--rose-dk);
+      color: white;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .upload-btn:hover { background: #b5687a; }
+
+    .upload-progress {
+      display: none;
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--rose-dk);
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .photo-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      group: 1;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-card-footer {
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .photo-name {
+      font-size: 11px;
+      color: var(--mid);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 120px;
+    }
+
+    .photo-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+
+    .photo-delete:hover { background: #fde8e8; }
+
+    /* ── TOAST ──────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--dark);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 1000;
+      max-width: 320px;
+    }
+
+    #toast.show { opacity: 1; }
+    #toast.success { background: var(--success); }
+    #toast.error { background: var(--danger); }
+
+    /* ── TAB PANELS ─────────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 700px) {
+      .admin-content { padding: 16px; }
+      .admin-header  { padding: 0 16px; }
+      .admin-nav     { padding: 0 8px; }
+      .nav-tab       { padding: 12px 14px; font-size: 13px; }
+      table { font-size: 12px; }
+      td, thead th { padding: 10px 10px; }
+      .action-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ───────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">joynailart</div>
+    <div class="login-sub">Admin Portal</div>
+    <input type="email" id="loginEmail" placeholder="Admin email" autocomplete="username">
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError">Invalid email or password.</div>
+  </div>
+</div>
+
+<!-- ── ADMIN SHELL ──────────────────────────── -->
+<div id="adminShell">
+  <header class="admin-header">
+    <div class="admin-logo">joynailart <span>Admin</span></div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </header>
+
+  <nav class="admin-nav">
+    <button class="nav-tab active" onclick="switchTab('bookings', this)">Bookings</button>
+    <button class="nav-tab" onclick="switchTab('gallery', this)">Gallery</button>
+  </nav>
+
+  <div class="admin-content">
+
+    <!-- BOOKINGS PANEL -->
+    <div id="panel-bookings" class="tab-panel active">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card rose">
+          <div class="stat-label">Total</div>
+          <div class="stat-number" id="statTotal">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending</div>
+          <div class="stat-number" id="statPending">—</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Confirmed</div>
+          <div class="stat-number" id="statConfirmed">—</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">Completed</div>
+          <div class="stat-number" id="statCompleted">—</div>
+        </div>
+      </div>
+
+      <div class="section-top">
+        <h2>Appointments</h2>
+        <div class="filter-row">
+          <select id="filterStatus" onchange="loadBookings()">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <input type="date" id="filterDate" onchange="loadBookings()">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Service</th>
+              <th>Date & Time</th>
+              <th>Contact</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsBody">
+            <tr><td colspan="6"><div class="empty-state"><p>Loading...</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GALLERY PANEL -->
+    <div id="panel-gallery" class="tab-panel">
+      <div class="section-top">
+        <h2>Photo Gallery</h2>
+      </div>
+
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('photoInput').click()">
+        <input type="file" id="photoInput" accept="image/*" multiple onchange="handleFileSelect(this.files)">
+        <div class="upload-icon">📸</div>
+        <h3>Upload photos</h3>
+        <p>Click to choose or drag & drop images here<br>JPG, PNG, WebP — max 10 MB each</p>
+        <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('photoInput').click()">Choose Photos</button>
+        <div class="upload-progress" id="uploadProgress">Uploading...</div>
+      </div>
+
+      <div class="photo-grid" id="photoGrid">
+        <p style="color:var(--mid);font-size:14px">Loading gallery...</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────
+  // Change this to your Render URL when deployed
+  const API = window.location.origin + '/api';
+
+  let token = localStorage.getItem('jna_admin_token');
+
+  // ── BOOT ────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    if (token) showAdmin();
+  });
+
+  // ── AUTH ────────────────────────────────────────
+  async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+
+    if (!email || !password) { showErr('Please enter email and password.'); return; }
+
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) { showErr(data.error || 'Login failed'); return; }
+
+      token = data.token;
+      localStorage.setItem('jna_admin_token', token);
+      showAdmin();
+    } catch {
+      showErr('Network error. Is the server running?');
+    }
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
+  });
+
+  function doLogout() {
+    token = null;
+    localStorage.removeItem('jna_admin_token');
+    document.getElementById('adminShell').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+
+  function showAdmin() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminShell').style.display = 'block';
+    loadBookings();
+    loadGallery();
+  }
+
+  // ── TABS ─────────────────────────────────────────
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ── BOOKINGS ─────────────────────────────────────
+  async function loadBookings() {
+    const status = document.getElementById('filterStatus').value;
+    const date   = document.getElementById('filterDate').value;
+
+    let url = `${API}/bookings`;
+    const params = new URLSearchParams();
+    if (status) params.set('status', status);
+    if (date)   params.set('date', date);
+    if (params.toString()) url += '?' + params.toString();
+
+    try {
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 401) { doLogout(); return; }
+      const bookings = await res.json();
+      renderBookings(bookings);
+      updateStats(bookings);
+    } catch {
+      toast('Could not load bookings', 'error');
+    }
+  }
+
+  function renderBookings(bookings) {
+    const tbody = document.getElementById('bookingsBody');
+    if (!bookings.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><p>No bookings found.</p></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = bookings.map(b => `
+      <tr>
+        <td><strong>${esc(b.name)}</strong></td>
+        <td>${esc(b.service)}</td>
+        <td>${formatDate(b.date)}<br><small style="color:var(--mid)">${esc(b.time)}</small></td>
+        <td>
+          📞 ${esc(b.phone)}
+          ${b.email ? `<br><small>✉️ ${esc(b.email)}</small>` : ''}
+          ${b.notes ? `<br><small style="color:var(--mid)">📝 ${esc(b.notes)}</small>` : ''}
+        </td>
+        <td><span class="badge badge-${b.status}">${b.status}</span></td>
+        <td>
+          <div class="action-btns">
+            ${b.status !== 'confirmed'  ? `<button class="btn-sm btn-confirm"  onclick="updateStatus('${b.id}','confirmed')">Confirm</button>` : ''}
+            ${b.status !== 'completed'  ? `<button class="btn-sm btn-complete" onclick="updateStatus('${b.id}','completed')">Done</button>` : ''}
+            ${b.status !== 'cancelled'  ? `<button class="btn-sm btn-cancel"   onclick="updateStatus('${b.id}','cancelled')">Cancel</button>` : ''}
+            <button class="btn-sm btn-delete" onclick="deleteBooking('${b.id}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function updateStats(bookings) {
+    document.getElementById('statTotal').textContent     = bookings.length;
+    document.getElementById('statPending').textContent   = bookings.filter(b => b.status === 'pending').length;
+    document.getElementById('statConfirmed').textContent = bookings.filter(b => b.status === 'confirmed').length;
+    document.getElementById('statCompleted').textContent = bookings.filter(b => b.status === 'completed').length;
+  }
+
+  async function updateStatus(id, status) {
+    try {
+      const res = await fetch(`${API}/bookings/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status })
+      });
+      if (!res.ok) throw new Error();
+      toast(`Booking marked as ${status}`, 'success');
+      loadBookings();
+    } catch {
+      toast('Could not update booking', 'error');
+    }
+  }
+
+  async function deleteBooking(id) {
+    if (!confirm('Delete this booking? This cannot be undone.')) return;
+    try {
+      const res = await fetch(`${API}/bookings/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error();
+      toast('Booking deleted', 'success');
+      loadBookings();
+    } catch {
+      toast('Could not delete booking', 'error');
+    }
+  }
+
+  // ── GALLERY ──────────────────────────────────────
+  async function loadGallery() {
+    try {
+      const res = await fetch(`${API}/photos`);
+      const photos = await res.json();
+      renderPhotos(photos);
+    } catch {
+      document.getElementById('photoGrid').innerHTML = '<p style="color:var(--danger)">Could not load gallery.</p>';
+    }
+  }
+
+  function renderPhotos(photos) {
+    const grid = document.getElementById('photoGrid');
+    if (!photos.length) {
+      grid.innerHTML = '<p style="color:var(--mid);font-size:14px">No photos yet. Upload some above!</p>';
+      return;
+    }
+    grid.innerHTML = photos.map(p => `
+      <div class="photo-card">
+        <img src="${p.url}" alt="${esc(p.name)}" loading="lazy">
+        <div class="photo-card-footer">
+          <span class="photo-name">${esc(p.name)}</span>
+          <button class="photo-delete" onclick="deletePhoto('${esc(p.name)}')" title="Delete">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Drag & drop support
+  const uploadArea = document.getElementById('uploadArea');
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFileSelect(e.dataTransfer.files);
+  });
+
+  async function handleFileSelect(files) {
+    if (!files || !files.length) return;
+    const progress = document.getElementById('uploadProgress');
+    progress.style.display = 'block';
+
+    let uploaded = 0;
+    for (const file of Array.from(files)) {
+      progress.textContent = `Uploading ${file.name}...`;
+      const form = new FormData();
+      form.append('photo', file);
+      try {
+        const res = await fetch(`${API}/photos`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: form
+        });
+        if (!res.ok) throw new Error();
+        uploaded++;
+      } catch {
+        toast(`Failed to upload ${file.name}`, 'error');
+      }
+    }
+
+    progress.style.display = 'none';
+    if (uploaded > 0) {
+      toast(`${uploaded} photo${uploaded > 1 ? 's' : ''} uploaded!`, 'success');
+      loadGallery();
+    }
+  }
+
+  async function deletePhoto(name) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API}/photos/${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error();
+      toast('Photo deleted', 'success');
+      loadGallery();
+    } catch {
+      toast('Could not delete photo', 'error');
+    }
+  }
+
+  // ── HELPERS ──────────────────────────────────────
+  function esc(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-KE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  let toastTimer;
+  function toast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.className = '', 3000);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: joynailart-server
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+    # Add these in Render Dashboard instead (they're sensitive)
+    # - key: SUPABASE_URL
+    # - key: SUPABASE_SERVICE_KEY
+    # - key: JWT_SECRET
+    # - key: CALLMEBOT_API_KEY
