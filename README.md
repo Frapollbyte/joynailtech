@@ -49,8 +49,8 @@ SUPABASE_SERVICE_KEY=your-service-role-key
 JWT_SECRET=run-this-in-terminal-to-generate: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 # CallMeBot WhatsApp notifications (admin alerts for new bookings)
-CALLMEBOT_PHONE=254724375331
-CALLMEBOT_API_KEY=4329109
+CALLMEBOT_PHONE=your-phone-number-here
+CALLMEBOT_API_KEY=your-api-key-here
 
 SETUP_KEY=any-secret-phrase-you-choose
 SETUP_DONE=false
